@@ -126,11 +126,13 @@ def search_and_confer(user):
     reset_middle_screen()
 
 def drag_up():
-    pyautogui.scroll(400) 
-    time.sleep(2)
-    reset_middle_screen()
+    for _ in range(2):
+        pyautogui.scroll(400) 
+        time.sleep(2)
+        reset_middle_screen()
 
 def drag_down():
-    pyautogui.scroll(-400) 
-    time.sleep(2)
-    reset_middle_screen()
+    for _ in range(2):
+        pyautogui.scroll(-400) 
+        time.sleep(2)
+        reset_middle_screen()

@@ -109,7 +109,7 @@ def remove_role(role, mention):
         remove_construction()
     elif role == "lord_commander":
         remove_lord_commander()
-    update_current(None, item, 0, mention)
+    update_current(None, role, 0, mention)
 
 """
 Formatting
