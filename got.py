@@ -53,7 +53,7 @@ BOTTOM_ROLES = {
     MOST_DEVOUT: 0,
     SHIPS: 1,
     BUILDER: 2,
-    RESEARCH: 3
+    RESEARCH: -1
 }
 
 
@@ -74,7 +74,7 @@ def perform_main_menu_action(action_type, top_or_bottom, role):
         role_mapping = setup_bot_menu_actions()
 
     if (action_type, role) in memoized_buttons:
-        x, y = memoized_buttuons[(action_type, role)]
+        x, y = memoized_buttons[(action_type, role)]
     else:
         action_button_name = get_action_button_name(action_type)
         all_action_buttons = list(

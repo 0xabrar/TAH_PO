@@ -180,7 +180,7 @@ def process_request(request):
         confer_role_action(user, role)
     except ValueError as e:
         update_state_processing(user, role, "not_found", timestamp, mention)
-        return
+        raise Exception("user not found")
     except NameError as e:
         update_state_processing(
             user, role, "unknown_error", timestamp, mention)
