@@ -41,6 +41,7 @@ def get_action_button_name(action_type):
         action_button = "confer.png"
     return action_button
 
+
 TOP_ROLES = {
     MASTER_OF_COIN: 0,
     LORD_COMMANDER: 1,
@@ -65,6 +66,7 @@ def setup_top_menu_actions():
 def setup_bot_menu_actions():
     drag_down()
     return BOTTOM_ROLES
+
 
 def perform_main_menu_action(action_type, top_or_bottom, role):
 
@@ -93,15 +95,18 @@ def reset_middle_screen():
     x, y = width // 2, height // 2
     pyautogui.moveTo(x, y, duration=0.25)
 
+
 def remove_role_action(role):
     top_or_bottom = BOTTOM if role in BOTTOM_ROLES.keys() else TOP
     perform_main_menu_action(REMOVE, top_or_bottom, role)
+
 
 def confer_role_action(user, role):
     remove_role_action(role)
     top_or_bottom = BOTTOM if role in BOTTOM_ROLES.keys() else TOP
     perform_main_menu_action(CONFER, top_or_bottom, role)
     search_and_confer(user, role)
+
 
 def search_and_confer(user, role):
     time.sleep(2)

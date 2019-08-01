@@ -118,11 +118,14 @@ def get_unknown():
 """
 Maintain consistency when updating
 """
+
+
 def full_reset(mention):
     remove_role_action("training")
     remove_role_action("builder")
     remove_role_action("research")
     remove_role_action("ships")
+
 
 def remove_role(role, mention):
     remove_role_action(role)
