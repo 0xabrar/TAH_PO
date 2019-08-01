@@ -187,7 +187,7 @@ async def message_completed():
             user = task["user"]
             mention = task["mention"]
             
-            msg = 'The {0} request for {1} resulted in an unknown error. Please send another !request {2}'.format(role, user, mention)
+            msg = 'The {0} request for {1} resulted in an unknown error. The current buffs have also been cleared in a full reset. Please send another !request {2}'.format(role, user, mention)
             remove_from_queue(task["user"])
             await client.send_message(channel, msg);
 
