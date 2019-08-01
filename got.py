@@ -118,12 +118,13 @@ def search_and_confer(user, role):
 
     top_roles = {LORD_COMMANDER, MASTER_OF_COIN, HAND_OF_THE_KING}
     # means we couldn't find a user
-    if role in top_roles and len(confers) != 4:
-        # repeat of code below but this closes the window by clicking outside instead
-        x, y = pyautogui.center(confers[0])
-        pyautogui.moveTo(x, y, duration=0.25)
-        pyautogui.click()
-        raise ValueError("couldn't find given username", user)
+    if role in top_roles:
+        if len(confers) != 4:
+            # repeat of code below but this closes the window by clicking outside instead
+            x, y = pyautogui.center(confers[0])
+            pyautogui.moveTo(x, y, duration=0.25)
+            pyautogui.click()
+            raise ValueError("couldn't find given username", user)
     elif len(confers) != 3:
         # repeat of code below but this closes the window by clicking outside instead
         x, y = pyautogui.center(confers[0])
