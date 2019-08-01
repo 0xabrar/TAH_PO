@@ -23,6 +23,22 @@ def has_PO_role(user):
             return True
     return False
 
+def has_leadership_role(user):
+    roles = user.roles
+    for role in roles:
+        if role.name == "Marquis" or role.name == "Official":
+            return True
+    return False
+
+def add_queue_message(buff, user, mention):
+    queue = get_queue()
+    for request in queue:
+        if request["user"] == user:
+            return "You can only request one buff at a time. Wait for your current request to complete before requesting another one, thanks."
+
+    add_to_queue(user, buff, mention)
+    return 'Added to queue {0} for {1} {2}'.format(buff, user, mention)
+
 
 """
 Functions for Discord bot.
@@ -96,13 +112,16 @@ async def on_message(message):
         research = current.get("research", {"user": "None", "start": 0})
         builder = current.get("builder", {"user": "None", "start": 0})
         training = current.get("training", {"user": "None", "start": 0})
+        ships = current.get("ships", {"user": "None", "start": 0})
 
         msg = """**Research**: %s - %d seconds remaining
 **Builder**: %s - %d seconds remaining
-**Training**: %s - %d seconds remaining""" % (
+**Training**: %s - %d seconds remaining
+**Ships**: %s - %d seconds remaining""" % (
             research["user"], buff_time_remaining(research["start"]),
             builder["user"], buff_time_remaining(builder["start"]),
             training["user"], buff_time_remaining(training["start"]),
+            ships["user"], buff_time_remaining(ships["start"])
             )
 
         await client.send_message(message.channel, msg)
@@ -110,48 +129,30 @@ async def on_message(message):
     elif message.content.startswith('!request'):
         contents = message.content.split("|")
         if len(contents) != 3:
-            msg = "Please send requests in the format '!request | [userName] | [buff]'. The current buffs are research, training, and builder."
+            msg = "Please send requests in the format '!request | [userName] | [buff]'. The current buffs are research, training, ships, and builder."
             await client.send_message(message.channel, msg)
             return
 
         user = contents[1].strip()
         buff = contents[2].strip()
-        valid_buffs = {"training", "builder", "research"}
-        if buff not in valid_buffs:
-            msg = "You have requested an invalid buff. The buff types are research, builder, and training."
+        valid_buffs = {"training", "builder", "research", "ships"}
+        leadership_buffs = {"Lord Commander", "Master of Coin", "Most Devout", "Master of Laws"}
+        if buff not in valid_buffs and buff not in leadership_buffs:
+            msg = "You have requested an invalid buff. The buff types are research, builder, ships, and training."
             await client.send_message(message.channel, msg)
             return
+        elif buff in leadership_buffs:
+            if not has_leadership_role(message.author):
+                msg = "Sorry, but you don't have permissions for that command."
+                await client.send_message(message.channel, msg)
+            else:
+                msg = add_queue_message(buff, user, message.author.mention)
+                await client.send_message(message.channel, msg)
+
         elif buff in valid_buffs:
 
-            not_handled = {
-                "Formin": "Lord Commander",
-                "RAMSICO": "Most Devout",
-                "Nugury": "Master of Coin"
-            }
-            if user in not_handled.keys():
-                msg = "Sorry {0}, because you're the current {1}, I can't process your request.".format(user, not_handled[user])
-                await client.send_message(message.channel, msg);
-                return
-
-            queue = get_queue()
-            for request in queue:
-                if request["user"] == user:
-                    msg = "You can only request one buff at a time. Wait for your current request to complete before requesting another one, thanks."
-                    await client.send_message(message.channel, msg);
-                    return
-
-            add_to_queue(user, buff, message.author.mention)
-            msg = 'Added to queue {0} for {1} {2.author.mention}'.format(buff, user, message)
+            msg = add_queue_message(buff, user, message.author.mention)
             await client.send_message(message.channel, msg)
-            """
-            try:
-                confer_training(user)
-                msg = 'Done conferring training {0.author.mention}'.format(message)
-                await client.send_message(message.channel, msg)
-            except ValueError as e:
-                msg = "There was an error in finding your user name in search."
-                await client.send_message(message.channel, msg)
-            """
         else:
             msg = "Unknown error with your request format."
             await client.send_message(message.channel, msg)

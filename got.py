@@ -85,8 +85,6 @@ def perform_main_menu_action(action_type, top_or_bottom, role):
 
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
-    if action_type == REMOVE:
-        pyautogui.click()
     time.sleep(1)
 
 
@@ -103,9 +101,9 @@ def confer_role_action(user, role):
     remove_role_action(role)
     top_or_bottom = BOTTOM if role in BOTTOM_ROLES.keys() else TOP
     perform_main_menu_action(CONFER, top_or_bottom, role)
-    search_and_confer(user)
+    search_and_confer(user, role)
 
-def search_and_confer(user):
+def search_and_confer(user, role):
     time.sleep(2)
     pyautogui.moveTo(780, 252, duration=0.25)
     pyautogui.click()
@@ -118,8 +116,15 @@ def search_and_confer(user):
     time.sleep(2)
     confers = list(pyautogui.locateAllOnScreen("confer.png"))
 
+    top_roles = {LORD_COMMANDER, MASTER_OF_COIN, HAND_OF_THE_KING}
     # means we couldn't find a user
-    if len(confers) != 3:
+    if role in top_roles and len(confers) != 4:
+        # repeat of code below but this closes the window by clicking outside instead
+        x, y = pyautogui.center(confers[0])
+        pyautogui.moveTo(x, y, duration=0.25)
+        pyautogui.click()
+        raise ValueError("couldn't find given username", user)
+    elif len(confers) != 3:
         # repeat of code below but this closes the window by clicking outside instead
         x, y = pyautogui.center(confers[0])
         pyautogui.moveTo(x, y, duration=0.25)
