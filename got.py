@@ -9,6 +9,12 @@ memoized_buttons = {
 
 }
 
+REMOVE = "remove"
+CONFER = "confer"
+
+TOP = "top"
+BOTTOM = "bottom"
+
 
 def get_action_button_name(action_type):
     action_button = None
@@ -33,7 +39,7 @@ def setup_top_menu_actions():
 def setup_bot_menu_actions():
     drag_down()
     return {
-        "Most Devout": 0
+        "Most Devout": 0,
         "ships": 1,
         "builder": 2,
         "research": 3
@@ -42,9 +48,9 @@ def setup_bot_menu_actions():
 
 def perform_main_menu_action(action_type, top_or_bottom, role):
 
-    if top_or_bottom == "top":
+    if top_or_bottom == TOP:
         role_mapping = setup_top_menu_actions()
-    elif top_or_bottom == "bottom":
+    elif top_or_bottom == BOTTOM:
         role_mapping = setup_bot_menu_actions
 
     if (action_type, role) in memoized_buttons:
@@ -59,7 +65,7 @@ def perform_main_menu_action(action_type, top_or_bottom, role):
 
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
-    if action_type == "remove":
+    if action_type == REMOVE:
         pyautogui.click()
     time.sleep(1)
 
@@ -71,19 +77,19 @@ def reset_middle_screen():
 
 
 def remove_research():
-    perform_main_menu_action("remove", "bottom", "research")
+    perform_main_menu_action(REMOVE, BOTTOM, "research")
 
 
 def remove_lord_commander():
-    perform_main_menu_action("remove", "top", "Lord Commander")
+    perform_main_menu_action(REMOVE, BOTTOM, "Lord Commander")
 
 
 def remove_construction():
-    perform_main_menu_action("remove", "bottom", "builder")
+    perform_main_menu_action(REMOVE, BOTTOM, "builder")
 
 
 def remove_training():
-    perform_main_menu_action("remove", "top", "training")
+    perform_main_menu_action(REMOVE, TOP, "training")
 
 
 def confer_research(user):
