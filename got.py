@@ -64,7 +64,7 @@ def setup_top_menu_actions():
 
 def setup_bot_menu_actions():
     drag_down()
-    BOTTOM_ROLES
+    return BOTTOM_ROLES
 
 def perform_main_menu_action(action_type, top_or_bottom, role):
 

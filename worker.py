@@ -214,8 +214,8 @@ if __name__ == "__main__":
             last_time = get_last_time()[0][0]
             if now - last_time < 45:
                 continue
-            update_last_time()
             process_queue()
+            update_last_time()
         except Exception as e:
             traceback.print_exc()
 

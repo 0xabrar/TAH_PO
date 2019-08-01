@@ -4,7 +4,12 @@ import os
 import time
 
 from discord.ext.commands import Bot
-from worker import add_to_queue, get_queue, get_current, buff_time_remaining, get_completed, remove_from_queue, clear_queue, clear_current, get_not_found, update_current, get_unknown
+from worker import (
+    add_to_queue, get_queue, get_current, 
+    buff_time_remaining, get_completed, 
+    remove_from_queue, clear_queue, clear_current, 
+    get_not_found, update_current, get_unknown
+)
 
 TOKEN = os.environ["TAH_TOKEN"]
 BOT_PREFIX = ("!")
