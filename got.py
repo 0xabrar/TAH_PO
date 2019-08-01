@@ -12,7 +12,7 @@ memoized_buttons = {
 
 def get_action_button_name(action_type):
     action_button = None
-    if action_type = "remove":
+    if action_type == "remove":
         action_button = "remove.png"
     elif action_type == "confer":
         action_button = "confer.png"
@@ -71,55 +71,19 @@ def reset_middle_screen():
 
 
 def remove_research():
-    drag_down()
-    if "remove_research" in buttons:
-        x, y = buttons["remove_research"]
-    else:
-        removes = list(pyautogui.locateAllOnScreen("remove.png"))
-        x, y = pyautogui.center(removes[-1])
-        buttons["remove_research"] = (x, y)
-    pyautogui.moveTo(x, y, duration=0.25)
-    pyautogui.click()
-    pyautogui.click()
-    time.sleep(1)
+    perform_main_menu_action("remove", "bottom", "research")
 
 
 def remove_lord_commander():
-    drag_up()
-    removes = list(pyautogui.locateAllOnScreen("remove.png"))
-    x, y = pyautogui.center(removes[2])
-    pyautogui.moveTo(x, y, duration=0.25)
-    pyautogui.click()
-    pyautogui.click()
-    time.sleep(1)
+    perform_main_menu_action("remove", "top", "Lord Commander")
 
 
 def remove_construction():
-    drag_down()
-    if "remove_builder" in buttons:
-        x, y = buttons["remove_builder"]
-    else:
-        removes = list(pyautogui.locateAllOnScreen("remove.png"))
-        x, y = pyautogui.center(removes[2])
-        buttons["remove_builder"] = (x, y)
-    pyautogui.moveTo(x, y, duration=0.25)
-    pyautogui.click()
-    pyautogui.click()
-    time.sleep(1)
+    perform_main_menu_action("remove", "bottom", "builder")
 
 
 def remove_training():
-    drag_up()
-    if "remove_training" in buttons:
-        x, y = buttons["remove_training"]
-    else:
-        removes = list(pyautogui.locateAllOnScreen("remove.png"))
-        x, y = pyautogui.center(removes[3])
-        buttons[remove_training] = (x, y)
-    pyautogui.moveTo(x, y, duration=0.25)
-    pyautogui.click()
-    pyautogui.click()
-    time.sleep(1)
+    perform_main_menu_action("remove", "top", "training")
 
 
 def confer_research(user):
