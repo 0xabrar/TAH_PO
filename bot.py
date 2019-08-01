@@ -121,7 +121,6 @@ async def on_message(message):
             not_handled = {
                 "Formin": "Lord Commander",
                 "RAMSICO": "Most Devout",
-                "VN Valar I": "Master of Ships",
                 "Nugury": "Master of Coin"
             }
             if user in not_handled.keys():

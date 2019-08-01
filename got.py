@@ -110,17 +110,19 @@ def search_and_confer(user):
     x, y = pyautogui.center(confers[0])
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
-    time.sleep(2)
+    time.sleep(4)
 
     # shouldn't still have search. if we do it means that the removal of this role wasn't processed corectly
-    search = pyautogui.center(pyautogui.locateOnScreen("search.png"))
-    if search is not None:
+    try:    
+        search = pyautogui.center(pyautogui.locateOnScreen("search.png"))
         # selects confer outside of the modal that opens
         x, y = pyautogui.center(confers[1])
         pyautogui.moveTo(x, y, duration=0.25)
         pyautogui.click()
         time.sleep(2)
-        raise RuntimeError("couldn't remove previous confer correctly")
+        raise NameError("couldn't remove previous confer correctly")
+    except TypeError as e:
+        pass
     reset_middle_screen()
 
 def drag_up():

@@ -92,10 +92,10 @@ def get_unknown():
     logs = [format_request(request) for request in logs]
     return logs
 
-def full_reset():
-    remove_role("training") 
-    remove_role("builder") 
-    remove_role("research") 
+def full_reset(mention):
+    remove_role("training", mention) 
+    remove_role("builder", mention) 
+    remove_role("research", mention) 
 
 """
 Maintain consistency when updating
@@ -161,9 +161,9 @@ def process_request(request):
     except ValueError as e:
         update_state_processing(user, role, "not_found", timestamp, mention)
         return
-    except RuntimeError as e:
+    except NameError as e:
         update_state_processing(user, role, "unknown_error", timestamp, mention)
-        full_reset()
+        full_reset(mention)
         return
 
     now = int(time.time())
