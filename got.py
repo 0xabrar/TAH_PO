@@ -1,18 +1,74 @@
 import time
-import pyautogui 
+import pyautogui
 
 """
 Functions for moving around the GOT interface and conferring titles.
 """
 
-buttons = {
-    
+memoized_buttons = {
+
 }
+
+
+def get_action_button_name(action_type):
+    action_button = None
+    if action_type = "remove":
+        action_button = "remove.png"
+    elif action_type == "confer":
+        action_button = "confer.png"
+    return action_button
+
+
+def setup_top_menu_actions():
+    drag_up()
+    return {
+        "Master of Coin": 0,
+        "Lord Commander": 1,
+        "Hand of the King": 2,
+        "training": 3,
+        "Master of Laws": 4
+    }
+
+
+def setup_bot_menu_actions():
+    drag_down()
+    return {
+        "Most Devout": 0
+        "ships": 1,
+        "builder": 2,
+        "research": 3
+    }
+
+
+def perform_main_menu_action(action_type, top_or_bottom, role):
+
+    if top_or_bottom == "top":
+        role_mapping = setup_top_menu_actions()
+    elif top_or_bottom == "bottom":
+        role_mapping = setup_bot_menu_actions
+
+    if (action_type, role) in memoized_buttons:
+        x, y = memoized_buttuons[(action_type, role)]
+    else:
+        action_button_name = get_action_button_name(action_type)
+        all_action_buttons = list(
+            pyautogui.locateAllOnScreen(action_button_name))
+        action_button = all_action_buttons[role_mapping[role]]
+        x, y = pyautogui.center(action_button)
+        memoized_buttons[(action_type, role)] = (x, y)
+
+    pyautogui.moveTo(x, y, duration=0.25)
+    pyautogui.click()
+    if action_type == "remove":
+        pyautogui.click()
+    time.sleep(1)
+
 
 def reset_middle_screen():
     width, height = pyautogui.size()
     x, y = width // 2, height // 2
     pyautogui.moveTo(x, y, duration=0.25)
+
 
 def remove_research():
     drag_down()
@@ -20,21 +76,23 @@ def remove_research():
         x, y = buttons["remove_research"]
     else:
         removes = list(pyautogui.locateAllOnScreen("remove.png"))
-        x, y = pyautogui.center(removes[-1]) 
+        x, y = pyautogui.center(removes[-1])
         buttons["remove_research"] = (x, y)
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
     pyautogui.click()
     time.sleep(1)
 
+
 def remove_lord_commander():
     drag_up()
     removes = list(pyautogui.locateAllOnScreen("remove.png"))
-    x, y = pyautogui.center(removes[2]) 
+    x, y = pyautogui.center(removes[2])
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
     pyautogui.click()
     time.sleep(1)
+
 
 def remove_construction():
     drag_down()
@@ -42,12 +100,13 @@ def remove_construction():
         x, y = buttons["remove_builder"]
     else:
         removes = list(pyautogui.locateAllOnScreen("remove.png"))
-        x, y = pyautogui.center(removes[2]) 
+        x, y = pyautogui.center(removes[2])
         buttons["remove_builder"] = (x, y)
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
     pyautogui.click()
     time.sleep(1)
+
 
 def remove_training():
     drag_up()
@@ -55,12 +114,13 @@ def remove_training():
         x, y = buttons["remove_training"]
     else:
         removes = list(pyautogui.locateAllOnScreen("remove.png"))
-        x, y = pyautogui.center(removes[3]) 
+        x, y = pyautogui.center(removes[3])
         buttons[remove_training] = (x, y)
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
     pyautogui.click()
     time.sleep(1)
+
 
 def confer_research(user):
     remove_research()
@@ -70,6 +130,7 @@ def confer_research(user):
     pyautogui.click()
     search_and_confer(user)
 
+
 def confer_builder(user):
     remove_construction()
     confers = list(pyautogui.locateAllOnScreen("confer.png"))
@@ -78,6 +139,7 @@ def confer_builder(user):
     pyautogui.click()
     search_and_confer(user)
 
+
 def confer_training(user):
     remove_training()
     confers = list(pyautogui.locateAllOnScreen("confer.png"))
@@ -85,6 +147,7 @@ def confer_training(user):
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
     search_and_confer(user)
+
 
 def search_and_confer(user):
     time.sleep(2)
@@ -105,7 +168,7 @@ def search_and_confer(user):
         x, y = pyautogui.center(confers[0])
         pyautogui.moveTo(x, y, duration=0.25)
         pyautogui.click()
-        raise ValueError("couldn't find given username", user) 
+        raise ValueError("couldn't find given username", user)
 
     x, y = pyautogui.center(confers[0])
     pyautogui.moveTo(x, y, duration=0.25)
@@ -113,7 +176,7 @@ def search_and_confer(user):
     time.sleep(4)
 
     # shouldn't still have search. if we do it means that the removal of this role wasn't processed corectly
-    try:    
+    try:
         search = pyautogui.center(pyautogui.locateOnScreen("search.png"))
         # selects confer outside of the modal that opens
         x, y = pyautogui.center(confers[1])
@@ -125,14 +188,16 @@ def search_and_confer(user):
         pass
     reset_middle_screen()
 
+
 def drag_up():
     for _ in range(2):
-        pyautogui.scroll(400) 
+        pyautogui.scroll(400)
         time.sleep(2)
         reset_middle_screen()
 
+
 def drag_down():
     for _ in range(2):
-        pyautogui.scroll(-400) 
+        pyautogui.scroll(-400)
         time.sleep(2)
         reset_middle_screen()

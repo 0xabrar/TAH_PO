@@ -1,7 +1,10 @@
 import time
 import traceback
 import sqlite3
-from got import confer_builder, confer_training, confer_research, remove_training, remove_research, remove_construction
+from got import (
+    confer_builder, confer_training, confer_research,
+    remove_training, remove_research, remove_construction
+)
 
 conn = sqlite3.connect("queue.db")
 c = conn.cursor()
@@ -9,6 +12,7 @@ c = conn.cursor()
 
 # 3 minutes min time guaranteed
 BUFF_MIN_TIME = 180
+
 
 def buff_time_remaining(compare):
     now = int(time.time())
@@ -27,9 +31,12 @@ c.execute("""CREATE TABLE times (last_entry integer)""")
 """
 Functions for interacting with the DB.
 """
+
+
 def get_last_time():
     stmt = "SELECT * FROM times"
     return list(c.execute(stmt))
+
 
 def update_last_time():
     stmt = "DELETE FROM times"
@@ -41,65 +48,87 @@ def update_last_time():
     c.execute(stmt)
     conn.commit()
 
+
 def add_to_queue(user, role, mention):
     now = int(time.time())
-    stmt = "REPLACE INTO logs (user, role, state, timestamp, mention) VALUES(\"%s\", \"%s\", \"%s\", %d, \"%s\")" % (user, role, "queued", now, mention)
+    stmt = "REPLACE INTO logs (user, role, state, timestamp, mention) VALUES(\"%s\", \"%s\", \"%s\", %d, \"%s\")" % (
+        user, role, "queued", now, mention)
     c.execute(stmt)
     conn.commit()
+
 
 def remove_from_queue(user):
     c.execute("DELETE FROM logs WHERE user=(?)", (user,))
     conn.commit()
 
+
 def clear_queue():
     c.execute("DELETE FROM logs")
     conn.commit()
+
 
 def clear_current():
     c.execute("DELETE FROM current")
     conn.commit()
 
+
 def update_current(user, role, time, mention):
-    stmt = "REPLACE INTO current (role, user, start, mention) VALUES(\"%s\", \"%s\", %d, \"%s\")" % (role, user, time, mention)
+    stmt = "REPLACE INTO current (role, user, start, mention) VALUES(\"%s\", \"%s\", %d, \"%s\")" % (
+        role, user, time, mention)
     c.execute(stmt)
     conn.commit()
+
 
 def update_state_processing(user, role, state, timestamp, mention):
-    stmt = "REPLACE INTO logs (user, role, state, timestamp, mention) VALUES(\"%s\", \"%s\", \"%s\", %d, \"%s\")" % (user, role, state, timestamp, mention)
+    stmt = "REPLACE INTO logs (user, role, state, timestamp, mention) VALUES(\"%s\", \"%s\", \"%s\", %d, \"%s\")" % (
+        user, role, state, timestamp, mention)
     c.execute(stmt)
     conn.commit()
 
+
 def get_queue():
-    logs = list(c.execute("SELECT * FROM logs WHERE state=\"queued\" OR state=\"processing\" ORDER BY timestamp"))
+    logs = list(c.execute(
+        "SELECT * FROM logs WHERE state=\"queued\" OR state=\"processing\" ORDER BY timestamp"))
     logs = [format_request(request) for request in logs]
     return logs
+
 
 def get_current():
     return format_current(list(c.execute("SELECT * FROM current")))
 
+
 def get_completed():
-    logs = list(c.execute("SELECT * FROM logs WHERE state=\"completed\" ORDER BY timestamp"))
+    logs = list(
+        c.execute("SELECT * FROM logs WHERE state=\"completed\" ORDER BY timestamp"))
     logs = [format_request(request) for request in logs]
     return logs
+
 
 def get_not_found():
-    logs = list(c.execute("SELECT * FROM logs WHERE state=\"not_found\" ORDER BY timestamp"))
+    logs = list(
+        c.execute("SELECT * FROM logs WHERE state=\"not_found\" ORDER BY timestamp"))
     logs = [format_request(request) for request in logs]
     return logs
+
 
 def get_unknown():
-    logs = list(c.execute("SELECT * FROM logs WHERE state=\"unknown_error\" ORDER BY timestamp"))
+    logs = list(c.execute(
+        "SELECT * FROM logs WHERE state=\"unknown_error\" ORDER BY timestamp"))
     logs = [format_request(request) for request in logs]
     return logs
 
+
 def full_reset(mention):
-    remove_role("training", mention) 
-    remove_role("builder", mention) 
-    remove_role("research", mention) 
+    remove_role("training", mention)
+    remove_role("builder", mention)
+    remove_role("research", mention)
+
 
 """
 Maintain consistency when updating
 """
+
+
 def remove_role(role, mention):
     if role == "training":
         remove_training()
@@ -111,9 +140,12 @@ def remove_role(role, mention):
         remove_lord_commander()
     update_current(None, role, 0, mention)
 
+
 """
 Formatting
 """
+
+
 def format_current(current):
     result = {}
     for item in current:
@@ -124,6 +156,7 @@ def format_current(current):
         }
     return result
 
+
 def format_request(request):
     return {
         "user": request[0],
@@ -133,14 +166,18 @@ def format_request(request):
         "mention": request[4]
     }
 
+
 """
 Updating large queues
 """
+
+
 def process_request(request):
     user = request["user"]
-    role = request["role"]  
+    role = request["role"]
     mention = request["mention"]
-    update_state_processing(user, role, "processing", request["timestamp"], mention)
+    update_state_processing(user, role, "processing",
+                            request["timestamp"], mention)
 
     current = get_current()
     # remove an existing role for a user if they already have that
@@ -162,7 +199,8 @@ def process_request(request):
         update_state_processing(user, role, "not_found", timestamp, mention)
         return
     except NameError as e:
-        update_state_processing(user, role, "unknown_error", timestamp, mention)
+        update_state_processing(
+            user, role, "unknown_error", timestamp, mention)
         full_reset(mention)
         return
 
