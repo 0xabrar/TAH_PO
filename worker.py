@@ -1,10 +1,7 @@
 import time
 import traceback
 import sqlite3
-from got import (
-    confer_builder, confer_training, confer_research,
-    remove_training, remove_research, remove_construction
-)
+from got import confer_role_action, remove_role_action
 
 conn = sqlite3.connect("queue.db")
 c = conn.cursor()
@@ -118,26 +115,16 @@ def get_unknown():
     return logs
 
 
-def full_reset(mention):
-    remove_role("training", mention)
-    remove_role("builder", mention)
-    remove_role("research", mention)
-
-
 """
 Maintain consistency when updating
 """
-
+def full_reset(mention):
+    remove_role_action("training")
+    remove_role_action("builder")
+    remove_role_action("research")
 
 def remove_role(role, mention):
-    if role == "training":
-        remove_training()
-    elif role == "research":
-        remove_research()
-    elif role == "builder":
-        remove_construction()
-    elif role == "lord_commander":
-        remove_lord_commander()
+    remove_role_action(role)
     update_current(None, role, 0, mention)
 
 
@@ -189,12 +176,7 @@ def process_request(request):
     mention = request["mention"]
 
     try:
-        if role == "research":
-            confer_research(user)
-        elif role == "training":
-            confer_training(user)
-        elif role == "builder":
-            confer_builder(user)
+        confer_role_action(user, role)
     except ValueError as e:
         update_state_processing(user, role, "not_found", timestamp, mention)
         return

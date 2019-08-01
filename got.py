@@ -9,49 +9,69 @@ memoized_buttons = {
 
 }
 
+"""
+Button type constants.
+"""
 REMOVE = "remove"
 CONFER = "confer"
 
 TOP = "top"
 BOTTOM = "bottom"
 
+"""
+Role constants
+"""
+MASTER_OF_COIN = "Master of Coin"
+LORD_COMMANDER = "Lord Commander"
+HAND_OF_THE_KING = "Hand of the King"
+MASTER_OF_LAWS = "Master of Laws"
+MOST_DEVOUT = "Most Devout"
+
+TRAINING = "training"
+SHIPS = "ships"
+BUILDER = "builder"
+RESEARCH = "research"
+
 
 def get_action_button_name(action_type):
     action_button = None
-    if action_type == "remove":
+    if action_type == REMOVE:
         action_button = "remove.png"
-    elif action_type == "confer":
+    elif action_type == CONFER:
         action_button = "confer.png"
     return action_button
+
+TOP_ROLES = {
+    MASTER_OF_COIN: 0,
+    LORD_COMMANDER: 1,
+    HAND_OF_THE_KING: 2,
+    TRAINING: 3,
+    MASTER_OF_LAWS: 4
+}
+
+BOTTOM_ROLES = {
+    MOST_DEVOUT: 0,
+    SHIPS: 1,
+    BUILDER: 2,
+    RESEARCH: 3
+}
 
 
 def setup_top_menu_actions():
     drag_up()
-    return {
-        "Master of Coin": 0,
-        "Lord Commander": 1,
-        "Hand of the King": 2,
-        "training": 3,
-        "Master of Laws": 4
-    }
+    return TOP_ROLES
 
 
 def setup_bot_menu_actions():
     drag_down()
-    return {
-        "Most Devout": 0,
-        "ships": 1,
-        "builder": 2,
-        "research": 3
-    }
-
+    BOTTOM_ROLES
 
 def perform_main_menu_action(action_type, top_or_bottom, role):
 
     if top_or_bottom == TOP:
         role_mapping = setup_top_menu_actions()
     elif top_or_bottom == BOTTOM:
-        role_mapping = setup_bot_menu_actions
+        role_mapping = setup_bot_menu_actions()
 
     if (action_type, role) in memoized_buttons:
         x, y = memoized_buttuons[(action_type, role)]
@@ -75,49 +95,15 @@ def reset_middle_screen():
     x, y = width // 2, height // 2
     pyautogui.moveTo(x, y, duration=0.25)
 
+def remove_role_action(role):
+    top_or_bottom = BOTTOM if role in BOTTOM_ROLES.keys() else TOP
+    perform_main_menu_action(REMOVE, top_or_bottom, role)
 
-def remove_research():
-    perform_main_menu_action(REMOVE, BOTTOM, "research")
-
-
-def remove_lord_commander():
-    perform_main_menu_action(REMOVE, BOTTOM, "Lord Commander")
-
-
-def remove_construction():
-    perform_main_menu_action(REMOVE, BOTTOM, "builder")
-
-
-def remove_training():
-    perform_main_menu_action(REMOVE, TOP, "training")
-
-
-def confer_research(user):
-    remove_research()
-    confers = list(pyautogui.locateAllOnScreen("confer.png"))
-    x, y = pyautogui.center(confers[-1])
-    pyautogui.moveTo(x, y, duration=0.25)
-    pyautogui.click()
+def confer_role_action(user, role):
+    remove_role_action(role)
+    top_or_bottom = BOTTOM if role in BOTTOM_ROLES.keys() else TOP
+    perform_main_menu_action(CONFER, top_or_bottom, role)
     search_and_confer(user)
-
-
-def confer_builder(user):
-    remove_construction()
-    confers = list(pyautogui.locateAllOnScreen("confer.png"))
-    x, y = pyautogui.center(confers[-2])
-    pyautogui.moveTo(x, y, duration=0.25)
-    pyautogui.click()
-    search_and_confer(user)
-
-
-def confer_training(user):
-    remove_training()
-    confers = list(pyautogui.locateAllOnScreen("confer.png"))
-    x, y = pyautogui.center(confers[0])
-    pyautogui.moveTo(x, y, duration=0.25)
-    pyautogui.click()
-    search_and_confer(user)
-
 
 def search_and_confer(user):
     time.sleep(2)

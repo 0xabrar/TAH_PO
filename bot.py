@@ -4,17 +4,12 @@ import os
 import time
 
 from discord.ext.commands import Bot
-from worker import (
-    add_to_queue, get_queue, get_current, buff_time_remaining,
-    get_completed, remove_from_queue, clear_queue, clear_current,
-    get_not_found, update_current, get_unknown
-)
+from worker import add_to_queue, get_queue, get_current, buff_time_remaining, get_completed, remove_from_queue, clear_queue, clear_current, get_not_found, update_current, get_unknown
 
 TOKEN = os.environ["TAH_TOKEN"]
 BOT_PREFIX = ("!")
 
 client = Bot(command_prefix=BOT_PREFIX)
-
 
 def has_PO_role(user):
     roles = user.roles
@@ -27,8 +22,6 @@ def has_PO_role(user):
 """
 Functions for Discord bot.
 """
-
-
 @client.event
 async def on_message(message):
     # we do not want the bot to reply to itself
@@ -72,29 +65,25 @@ async def on_message(message):
         msg = ""
         for rank, request in enumerate(queue):
             if request["state"] == "processing":
-                msg += """**Position %d**: %s - %s - %s\n""" % (
-                    rank, request["user"], request["role"], request["state"])
+                msg += """**Position %d**: %s - %s - %s\n""" % (rank, request["user"], request["role"], request["state"])
             else:
-                msg += """**Position %d**: %s - %s\n""" % (
-                    rank, request["user"], request["role"])
+                msg += """**Position %d**: %s - %s\n""" % (rank, request["user"], request["role"])
         if msg == "":
             msg = "Queue is empty."
         await client.send_message(message.channel, msg)
 
     elif message.content == "!done":
-        current = get_current()
+        current = get_current() 
         for role, info in current.items():
             user = info["user"]
             mention = info["mention"]
             if message.author.mention == mention:
                 update_current(user, role, 0, mention)
-                msg = "Understood, the role of {0} has been unlocked. Previous holder: {1} {2}".format(
-                    role, user, mention)
+                msg = "Understood, the role of {0} has been unlocked. Previous holder: {1} {2}".format(role, user, mention)
                 await client.send_message(message.channel, msg)
                 return
 
-        msg = "You don't currently hold any titles {0}".format(
-            message.author.mention)
+        msg = "You don't currently hold any titles {0}".format(message.author.mention)
         await client.send_message(message.channel, msg)
 
     elif message.content == "!current":
@@ -109,7 +98,7 @@ async def on_message(message):
             research["user"], buff_time_remaining(research["start"]),
             builder["user"], buff_time_remaining(builder["start"]),
             training["user"], buff_time_remaining(training["start"]),
-        )
+            )
 
         await client.send_message(message.channel, msg)
 
@@ -135,21 +124,19 @@ async def on_message(message):
                 "Nugury": "Master of Coin"
             }
             if user in not_handled.keys():
-                msg = "Sorry {0}, because you're the current {1}, I can't process your request.".format(
-                    user, not_handled[user])
-                await client.send_message(message.channel, msg)
+                msg = "Sorry {0}, because you're the current {1}, I can't process your request.".format(user, not_handled[user])
+                await client.send_message(message.channel, msg);
                 return
 
             queue = get_queue()
             for request in queue:
                 if request["user"] == user:
                     msg = "You can only request one buff at a time. Wait for your current request to complete before requesting another one, thanks."
-                    await client.send_message(message.channel, msg)
+                    await client.send_message(message.channel, msg);
                     return
 
             add_to_queue(user, buff, message.author.mention)
-            msg = 'Added to queue {0} for {1} {2.author.mention}'.format(
-                buff, user, message)
+            msg = 'Added to queue {0} for {1} {2.author.mention}'.format(buff, user, message)
             await client.send_message(message.channel, msg)
             """
             try:
@@ -166,11 +153,12 @@ async def on_message(message):
             return
     else:
         triggers = {"please", "pleas", "ships", "training", "build", "builder", "building", "train", "master",
-                    "maester", "chief", "grand", "whisperers", "buff", "buf", "plz", "research"}
+            "maester", "chief", "grand", "whisperers", "buff", "buf", "plz", "research"}
         if any(trigger in message.content.lower() for trigger in triggers):
-            msg = "It looks like you might be trying to request a buff {0}. You can request a buff using **!request** or find additional commands using **!commands**".format(
-                message.author.mention)
+            msg = "It looks like you might be trying to request a buff {0}. You can request a buff using **!request** or find additional commands using **!commands**".format(message.author.mention)
             await client.send_message(message.channel, msg)
+
+
 
 
 async def message_completed():
@@ -178,33 +166,31 @@ async def message_completed():
     while True:
         completed = get_completed()
         not_found = get_not_found()
-        unknown_error = get_unknown()
+        unknown_error = get_unknown()  
+
 
         if len(completed) != 0:
             task = completed[0]
-            msg = 'Your request for {0} to {1} has been completed {2}'.format(
-                task["role"], task["user"], task["mention"])
+            msg = 'Your request for {0} to {1} has been completed {2}'.format(task["role"], task["user"], task["mention"])
             remove_from_queue(task["user"])
-            await client.send_message(channel, msg)
+            await client.send_message(channel, msg);
         elif len(not_found) != 0:
             task = not_found[0]
-            msg = 'The user {0} was not found {1}'.format(
-                task["user"], task["mention"])
+            msg = 'The user {0} was not found {1}'.format(task["user"], task["mention"])
             remove_from_queue(task["user"])
-            await client.send_message(channel, msg)
+            await client.send_message(channel, msg);
         elif len(unknown_error) != 0:
             task = unknown_error[0]
 
             role = task["role"]
             user = task["user"]
             mention = task["mention"]
-
-            msg = 'The {0} request for {1} resulted in an unknown error. The current buffs have also been cleared in a full reset. Please send another !request {2}'.format(
-                role, user, mention)
+            
+            msg = 'The {0} request for {1} resulted in an unknown error. The current buffs have also been cleared in a full reset. Please send another !request {2}'.format(role, user, mention)
             remove_from_queue(task["user"])
-            await client.send_message(channel, msg)
+            await client.send_message(channel, msg);
 
-        await asyncio.sleep(10)
+        await asyncio.sleep(15)
 
 
 @client.event
@@ -220,3 +206,8 @@ async def on_ready():
 
 
 client.run(TOKEN)
+
+
+
+
+
