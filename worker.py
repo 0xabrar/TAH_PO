@@ -1,7 +1,10 @@
 import time
 import traceback
 import sqlite3
-from got import confer_role_action, remove_role_action
+from got import (
+    confer_role_action, remove_role_action,
+    TRAINING, SHIPS, RESEARCH, BUILDER
+)
 
 conn = sqlite3.connect("queue.db")
 c = conn.cursor()
@@ -121,10 +124,10 @@ Maintain consistency when updating
 
 
 def full_reset(mention):
-    remove_role_action("training")
-    remove_role_action("builder")
-    remove_role_action("research")
-    remove_role_action("ships")
+    remove_role(TRAINING, mention)
+    remove_role(RESEARCH, mention)
+    remove_role(SHIPS, mention)
+    remove_role(BUILDER, mention)
 
 
 def remove_role(role, mention):
