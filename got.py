@@ -87,7 +87,7 @@ def perform_main_menu_action(action_type, top_or_bottom, role):
 
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
-    time.sleep(1)
+    time.sleep(5)
 
 
 def reset_middle_screen():
@@ -109,7 +109,7 @@ def confer_role_action(user, role):
 
 
 def search_and_confer(user, role):
-    time.sleep(2)
+    time.sleep(10)
     pyautogui.moveTo(780, 252, duration=0.25)
     pyautogui.click()
     pyautogui.typewrite(user)
@@ -118,7 +118,7 @@ def search_and_confer(user, role):
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
 
-    time.sleep(2)
+    time.sleep(5)
     confers = list(pyautogui.locateAllOnScreen("confer.png"))
 
     top_roles = {LORD_COMMANDER, MASTER_OF_COIN, HAND_OF_THE_KING}
@@ -140,7 +140,7 @@ def search_and_confer(user, role):
     x, y = pyautogui.center(confers[0])
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
-    time.sleep(4)
+    time.sleep(5)
 
     # shouldn't still have search. if we do it means that the removal of this role wasn't processed corectly
     try:
@@ -149,7 +149,7 @@ def search_and_confer(user, role):
         x, y = pyautogui.center(confers[1])
         pyautogui.moveTo(x, y, duration=0.25)
         pyautogui.click()
-        time.sleep(2)
+        time.sleep(5)
         raise NameError("couldn't remove previous confer correctly")
     except TypeError as e:
         pass
@@ -159,12 +159,12 @@ def search_and_confer(user, role):
 def drag_up():
     for _ in range(2):
         pyautogui.scroll(400)
-        time.sleep(2)
+        time.sleep(4)
         reset_middle_screen()
 
 
 def drag_down():
     for _ in range(2):
         pyautogui.scroll(-400)
-        time.sleep(2)
+        time.sleep(4)
         reset_middle_screen()
