@@ -17,7 +17,7 @@ BOT_PREFIX = ("!")
 client = Bot(command_prefix=BOT_PREFIX)
 
 state = {
-    "status": "online"
+    "status": "online",
     "default_positions": {
         "Lord Commander": "Formin",
         "Most Devout": "RAMISCO"
@@ -73,7 +73,7 @@ async def on_message(message):
     elif message.content == "!disconnect":
         if has_PO_role(message.author):
             state["status"] = "offline"
-            msg = "TAH PO bot taken offline.
+            msg = "TAH PO bot taken offline."
         else:
             msg = "Sorry, but you don't have permissions for that command."
         await client.send_message(message.channel, msg)
@@ -81,7 +81,7 @@ async def on_message(message):
     elif message.content == "!connect":
         if has_PO_role(message.author):
             state["status"] = "online"
-            msg = "TAH PO bot back online.
+            msg = "TAH PO bot back online."
         else:
             msg = "Sorry, but you don't have permissions for that command."
         await client.send_message(message.channel, msg)
