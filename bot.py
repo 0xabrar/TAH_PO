@@ -16,6 +16,14 @@ BOT_PREFIX = ("!")
 
 client = Bot(command_prefix=BOT_PREFIX)
 
+state = {
+    "status": "online"
+    "default_positions": {
+        "Lord Commander": "Formin",
+        "Most Devout": "RAMISCO"
+    }
+}
+
 
 def has_PO_role(user):
     roles = user.roles
@@ -62,6 +70,21 @@ async def on_message(message):
         print(message.author.mention)
         await client.send_message(message.channel, msg)
 
+    elif message.content == "!disconnect":
+        if has_PO_role(message.author):
+            state["status"] = "offline"
+            msg = "TAH PO bot taken offline.
+        else:
+            msg = "Sorry, but you don't have permissions for that command."
+        await client.send_message(message.channel, msg)
+
+    elif message.content == "!connect":
+        if has_PO_role(message.author):
+            state["status"] = "online"
+            msg = "TAH PO bot back online.
+        else:
+            msg = "Sorry, but you don't have permissions for that command."
+        await client.send_message(message.channel, msg)
     elif message.content == "!clear":
         if has_PO_role(message.author):
             clear_queue()
@@ -136,6 +159,12 @@ async def on_message(message):
         await client.send_message(message.channel, msg)
 
     elif message.content.startswith('!request'):
+
+        if state["status"] == "offline":
+            msg = "TAH PO bot worker currently offline. Requires manual PO."
+            await client.send_message(message.channel, msg)
+            return
+
         contents = message.content.split("|")
         if len(contents) != 3:
             msg = "Please send requests in the format '!request | [userName] | [buff]'. The current buffs are research, training, ships, and builder."
@@ -168,6 +197,9 @@ async def on_message(message):
             await client.send_message(message.channel, msg)
             return
     else:
+
+        if state["status"] == "offline":
+            return
         triggers = {"please", "pleas", "ships", "training", "build", "builder", "building", "train", "master",
                     "maester", "chief", "grand", "whisperers", "buff", "buf", "plz", "research"}
         if any(trigger in message.content.lower() for trigger in triggers):
