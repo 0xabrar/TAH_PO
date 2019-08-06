@@ -129,7 +129,7 @@ async def on_message(message):
             user = info["user"]
             mention = info["mention"]
             if message.author.mention == mention:
-                update_current(user, role, 0, mention)
+                update_current(user, role, 0, None)
                 msg = "Understood, the role of {0} has been unlocked. Previous holder: {1} {2}".format(
                     role, user, mention)
                 await client.send_message(message.channel, msg)
