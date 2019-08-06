@@ -132,7 +132,7 @@ def full_reset(mention):
 
 def remove_role(role, mention):
     remove_role_action(role)
-    update_current(None, role, 0, mention)
+    update_current(None, role, 0, None)
 
 
 """
