@@ -155,13 +155,81 @@ def search_and_confer(user, role):
         pass
     reset_middle_screen()
 
+def full_reset():
+    pyautogui.press('f5')
+    time.sleep(30)
+    start = int(time.time())
+
+    # waiting for page to load
+    while True:
+        try: 
+            x, y = pyautogui.center(pyautogui.locateOnScreen("close.png"))
+            break
+        except TypeError as e:
+            compare = int(time.time())
+            if compare - start > 300:
+                raise TypeError("page didn't load")
+            time.sleep(10)
+    
+    for _ in range(2):
+        try:
+            x, y = pyautogui.center(pyautogui.locateOnScreen("close.png"))
+            pyautogui.moveTo(x, y, duration=0.25)
+            pyautogui.click()
+            reset_middle_screen()
+            time.sleep(3)
+        except NameError as e:
+            pass
+
+    # world button
+    pyautogui.moveTo(1554, 839, duration=0.25)
+    pyautogui.click()
+    time.sleep(30)
+
+    # coordinate search button
+    pyautogui.moveTo(1573, 356, duration=0.25)
+    pyautogui.click()
+    time.sleep(2)
+
+    # search x coordinate
+    pyautogui.moveTo(945, 490, duration=0.25)
+    pyautogui.click()
+    for _ in range(3):
+        pyautogui.press("backspace")
+    pyautogui.typewrite("467")
+    
+    # search y coordinate
+    pyautogui.moveTo(1092, 493, duration=0.25)
+    pyautogui.click()
+    for _ in range(3):
+        pyautogui.press("backspace")
+    pyautogui.typewrite("496")
+
+    # click search enter button
+    pyautogui.moveTo(1005, 634, duration=0.25)
+    pyautogui.click()
+    time.sleep(10)
+
+    # click KL
+    pyautogui.moveTo(904, 559, duration=0.25)
+    pyautogui.click()
+    time.sleep(2)
+
+    # click enter
+    pyautogui.moveTo(1201, 806, duration=0.25)
+    pyautogui.click()
+    time.sleep(2)
+
+    # click titles 
+    pyautogui.moveTo(1346, 266, duration=0.25)
+    pyautogui.click()
+    time.sleep(2)
 
 def drag_up():
     for _ in range(2):
         pyautogui.scroll(400)
         time.sleep(4)
         reset_middle_screen()
-
 
 def drag_down():
     for _ in range(2):
