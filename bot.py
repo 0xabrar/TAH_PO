@@ -8,7 +8,7 @@ from worker import (
     add_to_queue, get_queue, get_current,
     buff_time_remaining, get_completed,
     remove_from_queue, clear_queue, clear_current,
-    get_not_found, update_current, get_unknown,
+    get_not_found, update_current, get_unknown, get_refresh,
     get_blacklist, add_to_blacklist, remove_from_blacklist
 )
 
@@ -243,6 +243,7 @@ async def message_completed():
         completed = get_completed()
         not_found = get_not_found()
         unknown_error = get_unknown()
+        refresh = get_refresh()
 
         if len(completed) != 0:
             task = completed[0]
@@ -265,10 +266,16 @@ async def message_completed():
 
             msg = 'The {0} request for {1} resulted in an unknown error. The current buffs have also been cleared in a full reset. Please send another !request {2}'.format(
                 role, user, mention)
-            remove_from_queue(task["user"])
+            remove_from_queue(user)
+            await client.send_message(channel, msg)
+        elif len(refresh) != 0:
+            task = refresh[0]
+            user = task["user"]
+            remove_from_queue(user)
+            msg = "There was a popup (event/promotion/etc.) or a game crash. Refreshing the page over the next 5 minutes and resetting."
             await client.send_message(channel, msg)
 
-        await asyncio.sleep(15)
+        await asyncio.sleep(10)
 
 
 @client.event

@@ -3,7 +3,9 @@ import traceback
 import sqlite3
 from got import (
     confer_role_action, remove_role_action,
-    TRAINING, SHIPS, RESEARCH, BUILDER
+    TRAINING, SHIPS, RESEARCH, BUILDER,
+    LORD_COMMANDER, MOST_DEVOUT, MASTER_OF_COIN, HAND_OF_THE_KING, MASTER_OF_LAWS,
+    refresh_action
 )
 
 conn = sqlite3.connect("queue.db")
@@ -135,20 +137,35 @@ def get_unknown():
     logs = [format_request(request) for request in logs]
     return logs
 
+def get_refresh():
+    logs = list(c.execute(
+        "SELECT * FROM logs WHERE state=\"refresh\" ORDER BY timestamp"))
+    logs = [format_request(request) for request in logs]
+    return logs
+
 
 """
 Maintain consistency when updating
 """
+def refresh_page():
+    refresh_action()
+    full_reset()
 
 
-def full_reset(mention):
-    remove_role(TRAINING, mention)
-    remove_role(RESEARCH, mention)
-    remove_role(SHIPS, mention)
-    remove_role(BUILDER, mention)
+def full_reset():
+    remove_role(TRAINING)
+    remove_role(RESEARCH)
+    remove_role(SHIPS)
+    remove_role(BUILDER)
+
+    remove_role(LORD_COMMANDER)
+    remove_role(MASTER_OF_LAWS)
+    remove_role(MASTER_OF_COIN)
+    remove_role(HAND_OF_THE_KING)
+    remove_role(MOST_DEVOUT)
 
 
-def remove_role(role, mention):
+def remove_role(role):
     remove_role_action(role)
     update_current(None, role, 0, None)
 
@@ -193,9 +210,9 @@ def process_request(request):
 
     current = get_current()
     # remove an existing role for a user if they already have that
-    for item in current.keys():
-        if user == current[item]["user"]:
-            remove_role(item, mention)
+    for other_role in current.keys():
+        if user == current[other_role]["user"]:
+            remove_role(other_role)
 
     timestamp = request["timestamp"]
     mention = request["mention"]
@@ -204,12 +221,17 @@ def process_request(request):
         confer_role_action(user, role)
     except ValueError as e:
         update_state_processing(user, role, "not_found", timestamp, mention)
-        raise Exception("user not found")
+        raise e
     except NameError as e:
         update_state_processing(
             user, role, "unknown_error", timestamp, mention)
-        full_reset(mention)
-        return
+        full_reset()
+        raise e
+    except (TypeError, IndexError) as e:
+        update_state_processing(
+            user, role, "refresh", timestamp, mention)
+        refresh_page()
+        raise e
 
     now = int(time.time())
     update_current(user, role, now, mention)

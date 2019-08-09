@@ -155,7 +155,7 @@ def search_and_confer(user, role):
         pass
     reset_middle_screen()
 
-def full_reset():
+def refresh_action():
     pyautogui.press('f5')
     time.sleep(30)
     start = int(time.time())
