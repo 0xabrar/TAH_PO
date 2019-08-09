@@ -26,8 +26,8 @@ def buff_time_remaining(compare):
 c.execute("""CREATE TABLE current (role text primary key, user text, start integer, mention text)""")
 c.execute("""CREATE TABLE logs (user text primary key, role text, state text, timestamp integer, mention text)""")
 c.execute("""CREATE TABLE times (last_entry integer)""")
-'''
 c.execute("""CREATE TABLE blacklist (user text primary key)""")
+'''
 
 """
 Functions for interacting with the DB.
@@ -35,11 +35,13 @@ Functions for interacting with the DB.
 
 
 def get_blacklist():
-    return list(c.execute("SELECT * FROM blacklist"))
+    blacklist = list(c.execute("SELECT * FROM blacklist"))
+    return [item[0] for item in blacklist]
+
 
 
 def add_to_blacklist(user):
-    stmt = "REPLACE INTO blacklist (user) VALUES(%s)" % (user)
+    stmt = "REPLACE INTO blacklist (user) VALUES(\"%s\")" % (user)
     c.execute(stmt)
     conn.commit()
 

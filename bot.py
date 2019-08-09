@@ -82,8 +82,10 @@ async def on_message(message):
             user = contents[1].strip()
 
             if message.content.startswith("!blacklist"):
+                msg = "User added to blacklist."
                 add_to_blacklist(user)
             else:
+                msg = "User removed from blacklist."
                 remove_from_blacklist(user)
 
         else:
@@ -195,7 +197,7 @@ async def on_message(message):
 
         blacklist = get_blacklist()
         if user in blacklist:
-            msg = "User will not be allocated buffs."
+            msg = "User is blacklisted and will not be allocated buffs."
             await client.send_message(message.channel, msg)
             return
 
