@@ -8,7 +8,8 @@ from worker import (
     add_to_queue, get_queue, get_current,
     buff_time_remaining, get_completed,
     remove_from_queue, clear_queue, clear_current,
-    get_not_found, update_current, get_unknown
+    get_not_found, update_current, get_unknown,
+    get_blacklist, add_to_blacklist, remove_from_blacklist
 )
 
 TOKEN = os.environ["TAH_TOKEN"]
@@ -68,6 +69,25 @@ async def on_message(message):
     if message.content == ('!hello'):
         msg = 'Hello {0}'.format(message.author.mention)
         print(message.author.mention)
+        await client.send_message(message.channel, msg)
+
+    elif message.content.startswith("!blacklist") or message.content.startswith("!removeBlacklist"):
+        if has_PO_role(message.author):
+            contents = message.content.split("|")
+            if len(contents) != 2:
+                msg = "Incorrect format, separate user-name with |"
+                await client.send_message(message.channel, msg)
+                return
+
+            user = contents[1].strip()
+
+            if message.content.startswith("!blacklist"):
+                add_to_blacklist(user)
+            else:
+                remove_from_blacklist(user)
+
+        else:
+            msg = "Sorry, but you don't have permissions for that command."
         await client.send_message(message.channel, msg)
 
     elif message.content == "!disconnect":
@@ -172,6 +192,13 @@ async def on_message(message):
             return
 
         user = contents[1].strip()
+
+        blacklist = get_blacklist()
+        if user in blacklist:
+            msg = "User will not be allocated buffs."
+            await client.send_message(message.channel, msg)
+            return
+
         buff = contents[2].strip()
         valid_buffs = {"training", "builder", "research", "ships"}
         leadership_buffs = {"Lord Commander",

@@ -27,10 +27,26 @@ c.execute("""CREATE TABLE current (role text primary key, user text, start integ
 c.execute("""CREATE TABLE logs (user text primary key, role text, state text, timestamp integer, mention text)""")
 c.execute("""CREATE TABLE times (last_entry integer)""")
 '''
+c.execute("""CREATE TABLE blacklist (user text primary key)""")
 
 """
 Functions for interacting with the DB.
 """
+
+
+def get_blacklist():
+    return list(c.execute("SELECT * FROM blacklist"))
+
+
+def add_to_blacklist(user):
+    stmt = "REPLACE INTO blacklist (user) VALUES(%s)" % (user)
+    c.execute(stmt)
+    conn.commit()
+
+
+def remove_from_blacklist(user):
+    c.execute("DELETE FROM blacklist WHERE user=(?)", (user,))
+    conn.commit()
 
 
 def get_last_time():
