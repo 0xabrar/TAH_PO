@@ -200,7 +200,7 @@ async def on_message(message):
         buff = contents[2].strip()
         valid_buffs = {"training", "builder", "research", "ships"}
         leadership_buffs = {"Lord Commander",
-                            "Master of Coin", "Most Devout", "Master of Laws"}
+                            "Master of Coin", "Most Devout", "Master of Laws", "Hand of the King"}
         if buff not in valid_buffs and buff not in leadership_buffs:
             msg = "You have requested an invalid buff. The buff types are research, builder, ships, and training."
             await client.send_message(message.channel, msg)
