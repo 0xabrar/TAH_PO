@@ -62,3 +62,7 @@ docs/_build/
 # Project
 queue.db
 \.screenshot2019-0809_17-22-29-246667\.png
+
+*.pyc
+
+*.db
