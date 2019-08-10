@@ -15,6 +15,14 @@ c = conn.cursor()
 # 3 minutes min time guaranteed
 BUFF_MIN_TIME = 180
 
+DEFAULT_POSITIONS = {
+    LORD_COMMANDER: "Formin",
+    MASTER_OF_LAWS: "bonobo",
+    MOST_DEVOUT: "RAMISCO",
+    MASTER_OF_COIN: "Nugury",
+    HAND_OF_THE_KING: "RosaPony"
+}
+
 
 def buff_time_remaining(compare):
     now = int(time.time())
@@ -148,26 +156,39 @@ def get_refresh():
 Maintain consistency when updating
 """
 def refresh_page():
-    refresh_action()
-    full_reset()
+    try:
+        refresh_action()
+        full_reset()
+        set_defaults()
+    # may loop infinite in worst case, need exponential feedback to stop that
+    except (TypeError, IndexError) as e:
+        now = int(time.time())
+        update_state_processing(
+            None, None, "refresh", now, None)
+        refresh_page()
+        raise e
 
 
 def full_reset():
-    remove_role(TRAINING)
-    remove_role(RESEARCH)
-    remove_role(SHIPS)
-    remove_role(BUILDER)
-
-    remove_role(LORD_COMMANDER)
-    remove_role(MASTER_OF_LAWS)
     remove_role(MASTER_OF_COIN)
-    remove_role(HAND_OF_THE_KING)
+    remove_role(LORD_COMMANDER, fast_process=True)
+    remove_role(HAND_OF_THE_KING, fast_process=True)
+    remove_role(TRAINING, fast_process=True)
+    remove_role(MASTER_OF_LAWS)
+
     remove_role(MOST_DEVOUT)
+    remove_role(SHIPS, fast_process=True)
+    remove_role(BUILDER, fast_process=True)
+    remove_role(RESEARCH, fast_process=True)
 
 
-def remove_role(role):
-    remove_role_action(role)
+def remove_role(role, fast_process=False):
+    remove_role_action(role, fast_process)
     update_current(None, role, 0, None)
+
+def set_defaults():
+    for role, user in DEFAULT_POSITIONS.items():
+        add_to_queue(user, role, None)
 
 
 """
@@ -209,15 +230,15 @@ def process_request(request):
                             request["timestamp"], mention)
 
     current = get_current()
-    # remove an existing role for a user if they already have that
-    for other_role in current.keys():
-        if user == current[other_role]["user"]:
-            remove_role(other_role)
-
     timestamp = request["timestamp"]
     mention = request["mention"]
 
     try:
+        # remove an existing role for a user if they already have that
+        for other_role in current.keys():
+            if user == current[other_role]["user"]:
+                remove_role(other_role)
+
         confer_role_action(user, role)
     except ValueError as e:
         update_state_processing(user, role, "not_found", timestamp, mention)

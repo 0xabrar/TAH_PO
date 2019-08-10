@@ -18,11 +18,7 @@ BOT_PREFIX = ("!")
 client = Bot(command_prefix=BOT_PREFIX)
 
 state = {
-    "status": "online",
-    "default_positions": {
-        "Lord Commander": "Formin",
-        "Most Devout": "RAMISCO"
-    }
+    "status": "online"
 }
 
 
@@ -272,7 +268,7 @@ async def message_completed():
             task = refresh[0]
             user = task["user"]
             remove_from_queue(user)
-            msg = "There was a popup (event/promotion/etc.) or a game crash. Refreshing the page over the next 5 minutes and resetting."
+            msg = "There was a popup (event/promotion/etc.), invalid state, or a game crash. Refreshing the page over the next 5 minutes and resetting."
             await client.send_message(channel, msg)
 
         await asyncio.sleep(10)

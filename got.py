@@ -58,22 +58,22 @@ BOTTOM_ROLES = {
 }
 
 
-def setup_top_menu_actions():
-    drag_up()
-    return TOP_ROLES
+def drag_top_bottom(top_or_bottom):
+    if top_or_bottom == TOP:
+        drag_up()
+    elif top_or_bottom == BOTTOM:
+        drag_down()
 
 
-def setup_bot_menu_actions():
-    drag_down()
-    return BOTTOM_ROLES
-
-
-def perform_main_menu_action(action_type, top_or_bottom, role):
+def perform_main_menu_action(action_type, top_or_bottom, role, fast_process=False):
 
     if top_or_bottom == TOP:
-        role_mapping = setup_top_menu_actions()
+        role_mapping = TOP_ROLES
     elif top_or_bottom == BOTTOM:
-        role_mapping = setup_bot_menu_actions()
+        role_mapping = BOTTOM_ROLES
+
+    if not fast_process:
+        drag_top_bottom(top_or_bottom)
 
     if (action_type, role) in memoized_buttons:
         x, y = memoized_buttons[(action_type, role)]
@@ -87,29 +87,37 @@ def perform_main_menu_action(action_type, top_or_bottom, role):
 
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
-    time.sleep(5)
+
+    # can't have mouse covering screenshot
+    reset_middle_screen()
+    time.sleep(0.25)
 
 
 def reset_middle_screen():
     width, height = pyautogui.size()
     x, y = width // 2, height // 2
-    pyautogui.moveTo(x, y, duration=0.25)
+    pyautogui.moveTo(x, y, duration=0.2)
 
 
-def remove_role_action(role):
+def remove_role_action(role, fast_process=False):
     top_or_bottom = BOTTOM if role in BOTTOM_ROLES.keys() else TOP
-    perform_main_menu_action(REMOVE, top_or_bottom, role)
+    perform_main_menu_action(REMOVE, top_or_bottom, role, fast_process)
 
 
 def confer_role_action(user, role):
     remove_role_action(role)
     top_or_bottom = BOTTOM if role in BOTTOM_ROLES.keys() else TOP
-    perform_main_menu_action(CONFER, top_or_bottom, role)
+    fast_process = True
+
+    # only 2 roles that require re-dragging
+    if role == TRAINING or role == MASTER_OF_LAWS:
+        fast_process = False
+    perform_main_menu_action(CONFER, top_or_bottom, role, fast_process)
+    time.sleep(4)
     search_and_confer(user, role)
 
 
 def search_and_confer(user, role):
-    time.sleep(10)
     pyautogui.moveTo(780, 252, duration=0.25)
     pyautogui.click()
     pyautogui.typewrite(user)
@@ -118,7 +126,7 @@ def search_and_confer(user, role):
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
 
-    time.sleep(5)
+    time.sleep(3)
     confers = list(pyautogui.locateAllOnScreen("confer.png"))
 
     top_roles = {LORD_COMMANDER, MASTER_OF_COIN, HAND_OF_THE_KING}
@@ -177,14 +185,14 @@ def refresh_action():
             pyautogui.moveTo(x, y, duration=0.25)
             pyautogui.click()
             reset_middle_screen()
-            time.sleep(3)
+            time.sleep(2)
         except NameError as e:
             pass
 
     # world button
     pyautogui.moveTo(1554, 839, duration=0.25)
     pyautogui.click()
-    time.sleep(30)
+    time.sleep(20)
 
     # coordinate search button
     pyautogui.moveTo(1573, 356, duration=0.25)
@@ -223,16 +231,16 @@ def refresh_action():
     # click titles 
     pyautogui.moveTo(1346, 266, duration=0.25)
     pyautogui.click()
-    time.sleep(2)
+    time.sleep(4)
 
 def drag_up():
     for _ in range(2):
         pyautogui.scroll(400)
-        time.sleep(4)
+        time.sleep(1)
         reset_middle_screen()
 
 def drag_down():
     for _ in range(2):
         pyautogui.scroll(-400)
-        time.sleep(4)
+        time.sleep(1)
         reset_middle_screen()
