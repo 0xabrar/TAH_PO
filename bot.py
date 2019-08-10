@@ -8,7 +8,7 @@ from worker import (
     add_to_queue, get_queue, get_current,
     buff_time_remaining, get_completed,
     remove_from_queue, clear_queue, clear_current,
-    get_not_found, update_current, get_unknown, get_refresh,
+    get_not_found, update_current, get_unknown, get_refresh, update_state_processing,
     get_blacklist, add_to_blacklist, remove_from_blacklist
 )
 
