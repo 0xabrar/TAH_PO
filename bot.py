@@ -88,6 +88,15 @@ async def on_message(message):
             msg = "Sorry, but you don't have permissions for that command."
         await client.send_message(message.channel, msg)
 
+    elif message.content == "!refresh":
+        if has_PO_role(message.author):
+            msg = "Understood. Clearing queue, current, and refreshing page to get to initial state."
+            add_queue_message("refresh", "root", message.author.mention)
+            update_state_processing(
+                "root", "refresh", "manual_refresh", 0, message.author.mention)
+        else:
+            msg = "Sorry, but you don't have permissions for that command."
+        await client.send_message(message.channel, msg)
     elif message.content == "!disconnect":
         if has_PO_role(message.author):
             state["status"] = "offline"

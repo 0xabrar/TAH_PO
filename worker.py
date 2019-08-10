@@ -49,7 +49,6 @@ def get_blacklist():
     return [item[0] for item in blacklist]
 
 
-
 def add_to_blacklist(user):
     stmt = "REPLACE INTO blacklist (user) VALUES(\"%s\")" % (user)
     c.execute(stmt)
@@ -145,9 +144,19 @@ def get_unknown():
     logs = [format_request(request) for request in logs]
     return logs
 
+
 def get_refresh():
     logs = list(c.execute(
         "SELECT * FROM logs WHERE state=\"refresh\" ORDER BY timestamp"))
+    logs = [format_request(request) for request in logs]
+    return logs
+
+# for when people use !refresh command
+
+
+def get_manual_refresh():
+    logs = list(c.execute(
+        "SELECT * FROM logs WHERE state=\"manual_refresh\" ORDER BY timestamp"))
     logs = [format_request(request) for request in logs]
     return logs
 
@@ -155,6 +164,8 @@ def get_refresh():
 """
 Maintain consistency when updating
 """
+
+
 def refresh_page():
     try:
         refresh_action()
@@ -185,6 +196,7 @@ def full_reset():
 def remove_role(role, fast_process=False):
     remove_role_action(role, fast_process)
     update_current(None, role, 0, None)
+
 
 def set_defaults():
     for role, user in DEFAULT_POSITIONS.items():
@@ -278,9 +290,19 @@ if __name__ == "__main__":
     while True:
         try:
             time.sleep(5)
+
+            # check if manual refresh required
+            refresh = get_manual_refresh()
+            if len(refresh) != 0:
+                task = refresh[0]
+                user = task["user"]
+                clear_current()
+                clear_queue()
+                refresh_page()
+
             now = int(time.time())
             last_time = get_last_time()[0][0]
-            if now - last_time < 45:
+            if now - last_time < 40:
                 continue
             process_queue()
             update_last_time()
