@@ -115,7 +115,7 @@ def update_state_processing(user, role, state, timestamp, mention):
 
 def get_queue():
     logs = list(c.execute(
-        "SELECT * FROM logs WHERE state=\"queued\" OR state=\"processing\" ORDER BY timestamp"))
+        "SELECT * FROM logs WHERE state=\"queued\" OR state=\"processing\" OR state=\"manual_refresh\" ORDER BY timestamp"))
     logs = [format_request(request) for request in logs]
     return logs
 
