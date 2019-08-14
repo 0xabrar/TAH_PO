@@ -276,7 +276,11 @@ async def message_completed():
         elif len(refresh) != 0:
             task = refresh[0]
             user = task["user"]
-            remove_from_queue(user)
+            role = task["role"]
+            time = task["time"]
+            mention = task["mention"]
+
+            update_state_processing(user, role, "queued", time, mention)
             msg = "There was a popup (event/promotion/etc.), invalid state, or a game crash. Refreshing the page over the next 5 minutes and resetting."
             await client.send_message(channel, msg)
 
