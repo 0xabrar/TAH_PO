@@ -32,13 +32,18 @@ SHIPS = "ships"
 BUILDER = "builder"
 RESEARCH = "research"
 
+SEARCH_IMAGE = "images/search.png"
+CONFER_IMAGE = "images/confer.png"
+CLOSE_IMAGE = "images/close.png"
+REMOVE_IMAGE = "images/remove.png"
+
 
 def get_action_button_name(action_type):
     action_button = None
     if action_type == REMOVE:
-        action_button = "remove.png"
+        action_button = REMOVE_IMAGE
     elif action_type == CONFER:
-        action_button = "confer.png"
+        action_button = CONFER_IMAGE
     return action_button
 
 
@@ -122,12 +127,12 @@ def search_and_confer(user, role):
     pyautogui.click()
     pyautogui.typewrite(user)
 
-    x, y = pyautogui.center(pyautogui.locateOnScreen("search.png"))
+    x, y = pyautogui.center(pyautogui.locateOnScreen(SEARCH_IMAGE))
     pyautogui.moveTo(x, y, duration=0.25)
     pyautogui.click()
 
     time.sleep(3)
-    confers = list(pyautogui.locateAllOnScreen("confer.png"))
+    confers = list(pyautogui.locateAllOnScreen(CONFER_IMAGE))
 
     top_roles = {LORD_COMMANDER, MASTER_OF_COIN, HAND_OF_THE_KING}
     # means we couldn't find a user
@@ -152,7 +157,7 @@ def search_and_confer(user, role):
 
     # shouldn't still have search. if we do it means that the removal of this role wasn't processed corectly
     try:
-        search = pyautogui.center(pyautogui.locateOnScreen("search.png"))
+        search = pyautogui.center(pyautogui.locateOnScreen(SEARCH_IMAGE))
         # selects confer outside of the modal that opens
         x, y = pyautogui.center(confers[1])
         pyautogui.moveTo(x, y, duration=0.25)
@@ -163,6 +168,7 @@ def search_and_confer(user, role):
         pass
     reset_middle_screen()
 
+
 def refresh_action():
     pyautogui.press('f5')
     time.sleep(30)
@@ -170,18 +176,18 @@ def refresh_action():
 
     # waiting for page to load
     while True:
-        try: 
-            x, y = pyautogui.center(pyautogui.locateOnScreen("close.png"))
+        try:
+            x, y = pyautogui.center(pyautogui.locateOnScreen(CLOSE_IMAGE))
             break
         except TypeError as e:
             compare = int(time.time())
             if compare - start > 300:
                 raise TypeError("page didn't load")
             time.sleep(10)
-    
+
     for _ in range(2):
         try:
-            x, y = pyautogui.center(pyautogui.locateOnScreen("close.png"))
+            x, y = pyautogui.center(pyautogui.locateOnScreen(CLOSE_IMAGE))
             pyautogui.moveTo(x, y, duration=0.25)
             pyautogui.click()
             reset_middle_screen()
@@ -205,7 +211,7 @@ def refresh_action():
     for _ in range(3):
         pyautogui.press("backspace")
     pyautogui.typewrite("467")
-    
+
     # search y coordinate
     pyautogui.moveTo(1092, 493, duration=0.25)
     pyautogui.click()
@@ -228,16 +234,18 @@ def refresh_action():
     pyautogui.click()
     time.sleep(2)
 
-    # click titles 
+    # click titles
     pyautogui.moveTo(1346, 266, duration=0.25)
     pyautogui.click()
     time.sleep(4)
+
 
 def drag_up():
     for _ in range(2):
         pyautogui.scroll(400)
         time.sleep(1)
         reset_middle_screen()
+
 
 def drag_down():
     for _ in range(2):
