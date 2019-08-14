@@ -297,7 +297,6 @@ if __name__ == "__main__":
                 task = refresh[0]
                 user = task["user"]
                 clear_current()
-                clear_queue()
                 refresh_page()
 
             now = int(time.time())
